@@ -123,7 +123,6 @@ section { position: relative; padding: 15cqw 4.5cqw; }
 .ship { display: block; margin-top: 4px; font-size: 15px; font-weight: 700; }
 
 .ph { background-repeat: no-repeat; }
-.ph-bags { background-image: url(https://image.rakuten.co.jp/sawaicoffee-tea/cabinet/item/04/ac-sale-1960_02.jpg); background-size: 100% auto; background-position: 50% 100%; aspect-ratio: 720/312; }
 .ph-forte { background-image: url(https://image.rakuten.co.jp/sawaicoffee-tea/cabinet/item/04/ac-sale-1960_06.jpg); background-size: 192% auto; background-position: 93.75% 21.6%; aspect-ratio: 2/1; }
 .ph-victory { background-image: url(https://image.rakuten.co.jp/sawaicoffee-tea/cabinet/item/04/ac-sale-1960_07.jpg); background-size: 192% auto; background-position: 93.75% 21.6%; aspect-ratio: 2/1; }
 
@@ -214,7 +213,8 @@ section { position: relative; padding: 15cqw 4.5cqw; }
 
 /* ---------- 締め ---------- */
 .final { text-align: center; background: radial-gradient(90% 60% at 50% 70%, #4a2c0c 0, var(--c-bg) 74%); }
-.final-bags { margin: 0 -4.5cqw; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 30%); mask-image: linear-gradient(to bottom, transparent 0, #000 30%); }
+.final-photo { margin: 0 -4.5cqw; }
+.final-photo img { width: 100%; }
 
 /* ---------- 注意 ---------- */
 .foot { padding: 7cqw 4.5cqw 10cqw; font-size: 15px; color: var(--c-muted); }
