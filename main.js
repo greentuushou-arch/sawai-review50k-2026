@@ -4,8 +4,10 @@
   // ==== 案件設定 ====
   var CAMPAIGN_RATE = 20; // 楽天スーパーDEALの還元率(通常1倍分を含む・店舗ポイントとは併用なし)
   var TAX_RATE = 1.08; // DEALのポイントは税抜価格が基準
-  var START = new Date("2026-11-22T00:00:00+09:00").getTime();
-  var END = new Date("2026-11-23T00:00:00+09:00").getTime();
+  // 開催日。変更になったらここだけ書き換える(ページ内の日付・曜日・カウントダウンに反映される)
+  var DEAL_DATE = "2026-11-22";
+  var START = new Date(DEAL_DATE + "T00:00:00+09:00").getTime();
+  var END = START + 864e5;
   var SIZES = [
     { cups: 80, price: 2788 },
     { cups: 100, price: 3288 },
@@ -150,6 +152,15 @@
     ["deal", "thanks", "blends", "history", "size"].forEach(function (id) { io.observe(document.getElementById(id)); });
   }
 
+  /* ---- 開催日の日付・曜日をページに入れる ---- */
+  function renderDealDate() {
+    var day = String(Number(DEAL_DATE.slice(8, 10)));
+    var dow = "日月火水木金土".charAt(new Date(DEAL_DATE + "T00:00:00Z").getUTCDay());
+    qsa("[data-day]").forEach(function (el) { el.textContent = day; });
+    qsa("[data-dow]").forEach(function (el) { el.textContent = dow; });
+  }
+
+  renderDealDate();
   sizeBulbs();
   window.addEventListener("resize", sizeBulbs);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeBulbs);
