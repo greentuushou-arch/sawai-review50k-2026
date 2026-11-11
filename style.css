@@ -83,6 +83,11 @@ ul, ol { list-style: none; }
 .fv-catch { margin-top: 7cqw; font-weight: 700; line-height: 1.22; letter-spacing: .05em; }
 .fv-catch .ln:first-child { font-size: clamp(26px, 8cqw, 46px); }
 .fv-catch .ln:last-child { margin-top: .1em; font-size: clamp(52px, 16.4cqw, 92px); color: var(--c-gold); }
+.fv-special { margin-top: 9cqw; font-weight: 700; line-height: 1.15; letter-spacing: .04em; }
+.fv-special .ln:first-child { display: inline-block; padding: .5cqw 4cqw 1cqw; background: var(--c-red); color: #fff; font-size: clamp(26px, 8.4cqw, 48px); }
+.fv-special .ln:last-child { margin-top: 2cqw; font-size: clamp(44px, 13.4cqw, 82px); white-space: nowrap;
+  background: linear-gradient(105deg, var(--c-gold) 0 34%, var(--c-gold-light) 46%, #fff 50%, var(--c-gold-light) 54%, var(--c-gold) 66% 100%);
+  background-size: 260% 100%; background-position: 110% 0; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 4.5s ease-in-out 2.4s infinite; }
 .fv-period { margin-top: 5cqw; padding: 1.4cqw 0 1.8cqw; border-top: 2px solid var(--c-gold); border-bottom: 2px solid var(--c-gold); font: 700 clamp(22px, 7cqw, 46px)/1.25 var(--font-num); color: #fff; letter-spacing: .02em; white-space: nowrap; }
 .fv-tag { display: flex; justify-content: center; align-items: baseline; gap: 2cqw; margin-top: 5cqw; padding: 2cqw 3cqw; background: var(--c-paper); color: var(--c-ink); font-size: clamp(18px, 5.6cqw, 36px); font-weight: 700; white-space: nowrap; }
 .fv-tag b { font: 700 min(17cqw, 120px)/.95 var(--font-num); color: var(--c-red); letter-spacing: 0; }
