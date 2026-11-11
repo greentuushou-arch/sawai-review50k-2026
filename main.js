@@ -5,7 +5,7 @@
   var CAMPAIGN_RATE = 20; // 楽天スーパーDEALの還元率(通常1倍分を含む・店舗ポイントとは併用なし)
   var TAX_RATE = 1.08; // DEALのポイントは税抜価格が基準
   // 開催日。変更になったらここだけ書き換える(ページ内の日付・曜日・カウントダウンに反映される)
-  var DEAL_DATE = "2026-11-22";
+  var DEAL_DATE = "2026-11-23";
   var START = new Date(DEAL_DATE + "T00:00:00+09:00").getTime();
   var END = START + 864e5;
   var SIZES = [
@@ -24,7 +24,7 @@
   var qsa = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var yen = function (n) { return n.toLocaleString("ja-JP"); };
 
-  // 確認用: ?now=2026-11-22T12:00:00%2B09:00 で開催中の表示を確認できる
+  // 確認用: ?now=2026-11-23T12:00:00%2B09:00 で開催中の表示を確認できる
   var fixedNow = (function () {
     var v = new URLSearchParams(location.search).get("now");
     var t = v ? new Date(v).getTime() : NaN;

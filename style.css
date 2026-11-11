@@ -158,6 +158,8 @@ section { position: relative; padding: 15cqw 4.5cqw; }
 .deal-why li { padding: 10px 0; font-size: clamp(17px, 5.2cqw, 26px); font-weight: 700; line-height: 1.4; word-break: auto-phrase; }
 .deal-why li + li { border-top: 1px solid rgba(233,194,100,.45); }
 .deal-detail { margin-top: 6cqw; padding: 16px 16px 18px; background: var(--c-paper); color: var(--c-ink); text-align: left; }
+.deal-photo { margin: -16px -16px 16px; }
+.deal-photo img { width: 100%; }
 .deal-spec { font-size: 15px; font-weight: 700; color: #6b5d4e; }
 .deal-detail h3 { font-size: clamp(22px, 6.6cqw, 34px); font-weight: 700; line-height: 1.35; }
 .deal-detail .price { margin-top: 6px; }
@@ -213,8 +215,6 @@ section { position: relative; padding: 15cqw 4.5cqw; }
 
 /* ---------- 締め ---------- */
 .final { text-align: center; background: radial-gradient(90% 60% at 50% 70%, #4a2c0c 0, var(--c-bg) 74%); }
-.final-photo { margin: 0 -4.5cqw; }
-.final-photo img { width: 100%; }
 
 /* ---------- 注意 ---------- */
 .foot { padding: 7cqw 4.5cqw 10cqw; font-size: 15px; color: var(--c-muted); }
