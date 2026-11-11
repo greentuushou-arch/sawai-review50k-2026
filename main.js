@@ -14,8 +14,6 @@
     { cups: 300, price: 8888 }
   ];
   var MIN_DAYS = 30; // おすすめは「1か月以上もつ最小サイズ」
-  var WALL_WORDS = 90;
-  var WALL_STAGGER_MS = 24;
   var COUNT_MS = 1400;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,16 +29,6 @@
     return isNaN(t) ? null : t;
   })();
   var nowMs = function () { return fixedNow === null ? Date.now() : fixedNow; };
-
-  function onceInView(el, threshold, cb) {
-    if (reduced || !hasIO) { cb(); return; }
-    var io = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      io.disconnect();
-      cb();
-    }, { threshold: threshold });
-    io.observe(el);
-  }
 
   /* ---- 電球の縁取り(看板の大きさに合わせる) ---- */
   function sizeBulbs() {
@@ -113,27 +101,6 @@
     els.forEach(function (e) { io.observe(e); });
   }
 
-  /* ---- 「おいしい」の壁 ---- */
-  function setupWall() {
-    var wall = qs("[data-wall]");
-    var sizes = [15, 18, 22, 27, 34];
-    var frag = document.createDocumentFragment();
-    var spans = Array.from({ length: WALL_WORDS }, function (_, i) {
-      var s = document.createElement("span");
-      s.textContent = "おいしい";
-      s.style.fontSize = sizes[(i * 7 + (i % 5) * 3) % sizes.length] + "px";
-      frag.appendChild(s);
-      return s;
-    });
-    wall.appendChild(frag);
-    onceInView(wall, 0.3, function () {
-      spans.forEach(function (_, n) {
-        var idx = (n * 37) % spans.length;
-        setTimeout(function () { spans[idx].classList.add("is-lit"); }, reduced ? 0 : n * WALL_STAGGER_MS);
-      });
-    });
-  }
-
   /* ---- サイズ計算 ---- */
   function recommend(people, cups) {
     var perDay = people * cups;
@@ -180,7 +147,7 @@
         links.forEach(function (a) { a.classList.toggle("is-here", a.getAttribute("href") === hash); });
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
-    ["thanks", "deal", "blends", "history", "size"].forEach(function (id) { io.observe(document.getElementById(id)); });
+    ["deal", "thanks", "blends", "history", "size"].forEach(function (id) { io.observe(document.getElementById(id)); });
   }
 
   sizeBulbs();
@@ -191,7 +158,6 @@
     var timer = setInterval(function () { if (!renderClock()) clearInterval(timer); }, 1000);
   }
   setupReveal();
-  setupWall();
   setupCalc();
   renderPoints();
   setupHere();
