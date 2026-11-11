@@ -19,6 +19,7 @@
   var COUNT_MS = 1400;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasIO = "IntersectionObserver" in window;
   var qs = function (s) { return document.querySelector(s); };
   var qsa = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
   var yen = function (n) { return n.toLocaleString("ja-JP"); };
@@ -32,7 +33,7 @@
   var nowMs = function () { return fixedNow === null ? Date.now() : fixedNow; };
 
   function onceInView(el, threshold, cb) {
-    if (reduced || !("IntersectionObserver" in window)) { cb(); return; }
+    if (reduced || !hasIO) { cb(); return; }
     var io = new IntersectionObserver(function (entries) {
       if (!entries[0].isIntersecting) return;
       io.disconnect();
@@ -41,7 +42,21 @@
     io.observe(el);
   }
 
-  /* ---- FV: レビュー件数のカウント ---- */
+  /* ---- 電球の縁取り(看板の大きさに合わせる) ---- */
+  function sizeBulbs() {
+    var sign = qs("[data-sign]");
+    var r = sign.getBoundingClientRect();
+    if (r.width < 20) return;
+    var svg = sign.querySelector(".bulbs");
+    svg.setAttribute("viewBox", "0 0 " + r.width + " " + r.height);
+    Array.prototype.forEach.call(svg.querySelectorAll("rect"), function (el) {
+      el.setAttribute("x", 7); el.setAttribute("y", 7);
+      el.setAttribute("width", r.width - 14); el.setAttribute("height", r.height - 14);
+      el.setAttribute("rx", 14);
+    });
+  }
+
+  /* ---- 看板のレビュー件数カウント ---- */
   function runCount() {
     if (reduced) return;
     var el = qs("[data-count]");
@@ -54,41 +69,54 @@
     })(start);
   }
 
-  /* ---- カウントダウン ---- */
+  /* ---- カウントダウン(FV・左レール・締めの3か所) ---- */
   function pad(n) { return String(n).padStart(2, "0"); }
   function unit(n, u) { return n + "<small>" + u + "</small>"; }
 
   function renderClock() {
     var now = nowMs();
-    var label = qs("[data-clock-label]");
+    var labels = qsa("[data-clock-label]");
     var clocks = qsa("[data-clock]");
+    var label;
     var html;
     if (now >= END) {
-      label.textContent = "本企画は終了しました";
+      labels.forEach(function (l) { l.textContent = "本企画は終了しました"; });
       clocks.forEach(function (c) { c.hidden = true; });
-      qsa(".btn[data-cta]").forEach(function (b) {
-        b.textContent = "商品ページを見る";
-        b.classList.add("is-off");
-      });
+      qsa(".btn[data-cta]").forEach(function (b) { b.textContent = "商品ページを見る"; b.classList.add("is-off"); });
       return false;
     }
     if (now < START) {
       var left = START - now;
-      label.textContent = "開始まで";
-      html = "あと" + unit(Math.floor(left / 864e5), "日") + unit(Math.floor(left / 36e5) % 24, "時間") + unit(Math.floor(left / 6e4) % 60, "分");
+      label = "開始まで";
+      html = unit(Math.floor(left / 864e5), "日") + unit(pad(Math.floor(left / 36e5) % 24), "時間") + unit(pad(Math.floor(left / 6e4) % 60), "分") + unit(pad(Math.floor(left / 1e3) % 60), "秒");
     } else {
       var rest = END - now;
-      label.textContent = "終了まで";
-      html = "あと" + unit(Math.floor(rest / 36e5), "時間") + unit(pad(Math.floor(rest / 6e4) % 60), "分") + unit(pad(Math.floor(rest / 1e3) % 60), "秒");
+      label = "終了まで";
+      html = unit(pad(Math.floor(rest / 36e5)), "時間") + unit(pad(Math.floor(rest / 6e4) % 60), "分") + unit(pad(Math.floor(rest / 1e3) % 60), "秒");
     }
+    labels.forEach(function (l) { l.textContent = label; });
     clocks.forEach(function (c) { c.innerHTML = html; });
     return true;
+  }
+
+  /* ---- 登場 ---- */
+  function setupReveal() {
+    var els = qsa(".rv");
+    if (reduced || !hasIO) { els.forEach(function (e) { e.classList.add("in"); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (e) { io.observe(e); });
   }
 
   /* ---- 「おいしい」の壁 ---- */
   function setupWall() {
     var wall = qs("[data-wall]");
-    var sizes = [14, 16, 19, 23, 28];
+    var sizes = [15, 18, 22, 27, 34];
     var frag = document.createDocumentFragment();
     var spans = Array.from({ length: WALL_WORDS }, function (_, i) {
       var s = document.createElement("span");
@@ -104,12 +132,6 @@
         setTimeout(function () { spans[idx].classList.add("is-lit"); }, reduced ? 0 : n * WALL_STAGGER_MS);
       });
     });
-  }
-
-  /* ---- 倍率の帯 ---- */
-  function setupRate() {
-    var rate = qs("[data-rate]");
-    onceInView(rate, 0.5, function () { rate.classList.add("is-in"); });
   }
 
   /* ---- サイズ計算 ---- */
@@ -147,29 +169,30 @@
     }).join("");
   }
 
-  /* ---- 追従CTA ---- */
-  function setupDock() {
-    if (!("IntersectionObserver" in window)) return;
-    var dock = qs("[data-dock]");
-    var fv = qs(".fv");
-    var hide = { fv: true, final: false };
+  /* ---- いま見ている場所をメニューで光らせる ---- */
+  function setupHere() {
+    if (!hasIO) return;
+    var links = qsa("[data-nav] a, [data-tabbar] a");
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        hide = Object.assign({}, hide, e.target === fv ? { fv: e.isIntersecting } : { final: e.isIntersecting });
+        if (!e.isIntersecting) return;
+        var hash = "#" + e.target.id;
+        links.forEach(function (a) { a.classList.toggle("is-here", a.getAttribute("href") === hash); });
       });
-      dock.classList.toggle("is-on", !hide.fv && !hide.final);
-    });
-    io.observe(fv);
-    io.observe(qs(".final"));
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    ["thanks", "deal", "blends", "history", "size"].forEach(function (id) { io.observe(document.getElementById(id)); });
   }
 
+  sizeBulbs();
+  window.addEventListener("resize", sizeBulbs);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeBulbs);
   runCount();
   if (renderClock()) {
     var timer = setInterval(function () { if (!renderClock()) clearInterval(timer); }, 1000);
   }
+  setupReveal();
   setupWall();
-  setupRate();
   setupCalc();
   renderPoints();
-  setupDock();
+  setupHere();
 })();
